@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  
+
   <link rel="stylesheet" href="CSS\index.css">
 
   <title>Dashboard with Full-height Sidebar</title>
@@ -73,45 +76,47 @@
 
     <!-- modal pa actualizar -->
     <!-- Modal para actualizar objetos -->
-    <div class="modal" id="myModal_actualizar">
-      <div class="modal-dialog">
-        <div class="modal-content">
-
-          <!-- Cabecera del Modal -->
-          <div class="modal-header">
-            <h4 class="modal-title">Actualizar Objeto</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <!-- Modal -->
+<div class="modal fade" id="myModal_actualizar" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateModalLabel">Actualizar Objeto</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="mantenedor_objetos.php" method="post">
+          <div class="form-group">
+            <label for="objeto_modal">Objeto:</label>
+            <input type="text" class="form-control" id="objeto_modal" name="objeto" required>
           </div>
-
-          <!-- Contenido del Modal -->
-          <div class="modal-body">
-          <?php
-          require 'db.php';
-          $sql = "SELECT * FROM objetos where id=?";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("s", $id);
-          $stmt->execute();
-          $result = $stmt->get_result();
-         
-          
-          // Verificar si la consulta devolvió resultados
-          if ($result->num_rows > 0) {
-            // output data of each row
-
-          } else {
-            echo "0 results";
-          }
-          $conn->close();
-          ?>
-          ?>
+          <div class="form-group">
+            <label for="marca_modal">Marca:</label>
+            <input type="text" class="form-control" id="marca_modal" name="marca" required>
           </div>
-          <!-- Pie del Modal -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+          <div class="form-group">
+            <label for="proveedor_modal">Proveedor:</label>
+            <input type="text" class="form-control" id="proveedor_modal" name="proveedor" required>
           </div>
-        </div>
+          <div class="form-group">
+            <label for="modelo_modal">Modelo:</label>
+            <input type="text" class="form-control" id="modelo_modal" name="modelo" required>
+          </div>
+          <div class="form-group">
+            <label for="localizacion_modal">Localización:</label>
+            <input type="text" class="form-control" id="localizacion_modal" name="localizacion" required>
+          </div>
+          <input type="text" id="consulta_modal" name="consulta" value="actualizar" hidden>
+          <input type="text" id="id_modal" name="id" hidden>
+          <button type="submit" class="btn btn-success ">Actualizar</button>
+        </form>
       </div>
     </div>
+  </div>
+</div>
+
 
 
 
@@ -157,10 +162,10 @@
                 <td>" . $row["proveedor"] . "</td>
                 <td>" . $row["modelo"] . "</td>
                 <td>" . $row["localizacion"] . "</td>
-                <td> <form action='mantenedor_objetos.php' method='post'>
-                <input type='text' id='id' name='id' value='" . $row["id"] . "' hidden>
+                <td> <form id='form_actualizar' action='mantenedor_objetos.php' method='post'>
+                <input type='text'  name='id' id= 'id_Act' value='" . $row["id"] . "' hidden>
                 <input type='text' id='consulta' name='consulta' value='consulta_actualizar' hidden>
-                <button type='submit' class='btn btn-primary' data-toggle='modal' data-target='#myModal_actualizar'>Actualizar</button>
+                <button type='button' class='btn btn-primary btn-actualizar' data-toggle='modal' data-target='#myModal_actualizar'form='form_actualizar'>Actualizar</button>
                 </form>
                 </td>
 
@@ -171,8 +176,9 @@
                 </form>
                  </td>
               </tr>";
+              
         }
-
+       
         echo "</tbody></table>";
       } else {
         echo "No se encontraron resultados en la base de datos.";
@@ -185,7 +191,37 @@
 
 
   </div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  
+<script>$(document).ready(function () {
+  // Cuando se haga clic en el botón de actualización en la tabla
+  $(".btn-actualizar").click(function () {
+    // Obtener el ID del objeto de la fila de la tabla
+    
+    const element = document.getElementById("id_Act");
+    
+    console.log(element.value);
+    // Asignar el ID al campo de ID del modal
+   
+
+    // Enviar el formulario a través de AJAX
+    $.ajax({
+      type: 'POST',
+      url: 'mantenedor_objetos.php',
+      data: $('#form_actualizar').serialize(), // Serializar el formulario
+      success: function (response) {
+        // Manejar la respuesta del servidor aquí si es necesario
+        console.log(response);
+        // Opcional: Cerrar el modal después de enviar el formulario
+
+        // Opcional: Actualizar la tabla u otra parte de la página si es necesario
+        // Ejemplo: $('#tabla').load('actualizar_tabla.php');
+      }
+
+    });
+
+   
+  });
+})</script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="functions.js"></script>

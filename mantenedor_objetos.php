@@ -63,34 +63,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" and $consulta=="consulta_actualizar") {
         $id=$result['id'];
 
         echo '
-        <div class="modal-body">
-            <!-- Formulario para agregar objetos -->
-            <form action="mantenedor_objetos.php" method="post">
-              <div class="form-group">
-                <label for="objeto">Objeto:</label>
-                <input type="text" class="form-control" id="objeto" name="objeto" value="'. $objeto .'" required>
-              </div>
-              <div class="form-group">
-                <label for="marca">Marca:</label>
-                <input type="text" class="form-control" id="marca" name="marca" value="'. $marca .'" required>
-              </div>
-              <div class="form-group">
-                <label for="proveedor">Proveedor:</label>
-                <input type="text" class="form-control" id="proveedor" name="proveedor" value="'. $proveedor .'" required>
-              </div>
-              <div class="form-group">
-                <label for="modelo">Modelo:</label>
-                <input type="text" class="form-control" id="modelo" name="modelo" value="'. $modelo .'" required>
-              </div>
-              <div class="form-group">
-                <label for="localizacion">Localización:</label>
-                <input type="text" class="form-control" id="localizacion" name="localizacion" value="'. $localizacion .'" required>
-              </div>
-              <input type="text" id="consulta" name="consulta" value="actualizar" hidden>
-                <input type="text" id="id" name="id" value="'. $id .'" hidden>
-              <button type="submit" class="btn btn-success">Actualizar '. $objeto .'</button>
-            </form>
-          </div>';
+        
+            $(document).ready(function() {
+                $("#myModal_actualizar").modal("show");
+                $("#objeto_modal").val("' . $objeto . '");
+                $("#marca_modal").val("' . $marca . '");
+                $("#proveedor_modal").val("' . $proveedor . '");
+                $("#modelo_modal").val("' . $modelo . '");
+                $("#localizacion_modal").val("' . $localizacion . '");
+                $("#id_modal").val("' . $id . '");
+            });
+        ';
+        
+    
+      
+       
+        
+        
+        
+        
 
     } catch (Exception $e) {
         echo "Error al eliminar objeto: " . $stmt->error;
