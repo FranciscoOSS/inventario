@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+ 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
 
   <link rel="stylesheet" href="CSS\index.css">
@@ -163,16 +164,16 @@
                 <td>" . $row["modelo"] . "</td>
                 <td>" . $row["localizacion"] . "</td>
                 <td> <form id='form_actualizar' action='mantenedor_objetos.php' method='post'>
-                <input type='text'  name='id' id= 'id_Act' value='" . $row["id"] . "' hidden>
-                <input type='text' id='consulta' name='consulta' value='consulta_actualizar' hidden>
-                <button type='button' class='btn btn-primary btn-actualizar' data-toggle='modal' data-target='#myModal_actualizar'form='form_actualizar'>Actualizar</button>
-                </form>
+                <input type='text' name='id' id='idnv' value='" . $row["id"] . "' hidden>
+                <input type='text' name='consulta' value='consulta_actualizar' hidden>
+                <button type='button' class='btn btn-primary btn-actualizar' data-toggle='modal' data-target='#myModal_actualizar' data-id='" . $row["id"] . " ' data-objeto='". $row["objeto"] ."' data-id='" . $row["id"] . " ' data-marca='" . $row["marca"] . " ' data-proveedor='" . $row["proveedor"] . " ' data-modelo='" . $row["modelo"] . " ' data-localizacion='" . $row["localizacion"] . " '  >Actualizar</button>
+            </form>
                 </td>
 
                 <td>  <form action='mantenedor_objetos.php' method='post'>
-                <input type='text' id='id' name='id' value='" . $row["id"] . "' hidden>
-                <input type='text' id='consulta' name='consulta' value='eliminar' hidden>
-                <button type='submit' class='btn btn-primary'>Eliminar</button>
+                <input type='text'  name='id' value='" . $row["id"] . "' hidden>
+                <input type='text' id='consulta' name='consulta' value='eliminar' hidden> 
+                <button type='submit' class='btn btn-primary')>Eliminar</button>
                 </form>
                  </td>
               </tr>";
@@ -191,17 +192,35 @@
 
 
   </div>
-  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="functions.js"></script>
 <script>$(document).ready(function () {
   // Cuando se haga clic en el botón de actualización en la tabla
   $(".btn-actualizar").click(function () {
+    var idajax = $(this).data('id');
+    var objetoajax =$(this).data('objeto');
+    var marcaajax =$(this).data('marca');
+    var proveedorajax =$(this).data('proveedor');
+    var modeloajax =$(this).data('modelo');
+    
+    var localizacionajax =$(this).data('localizacion')
+
+   
+
+        $('#objeto_modal').val(objetoajax);
+        $('#marca_modal').val(marcaajax);
+        $('#proveedor_modal').val(proveedorajax);
+        $('#modelo_modal').val(modeloajax);
+        $('#localizacion_modal').val(localizacionajax);
+       
+
     // Obtener el ID del objeto de la fila de la tabla
     
-    const element = document.getElementById("id_Act");
-    
-    console.log(element.value);
     // Asignar el ID al campo de ID del modal
-   
+    $("#idnv").val(idajax);
+    // Asignar el ID al campo de ID del modal
+    $("#id_modal").val(idajax);
 
     // Enviar el formulario a través de AJAX
     $.ajax({
@@ -210,21 +229,16 @@
       data: $('#form_actualizar').serialize(), // Serializar el formulario
       success: function (response) {
         // Manejar la respuesta del servidor aquí si es necesario
-        console.log(response);
-        // Opcional: Cerrar el modal después de enviar el formulario
-
-        // Opcional: Actualizar la tabla u otra parte de la página si es necesario
-        // Ejemplo: $('#tabla').load('actualizar_tabla.php');
+        
       }
 
     });
 
    
   });
+  
 })</script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="functions.js"></script>
+  
 </body>
 
 </html>
