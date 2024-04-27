@@ -23,8 +23,7 @@
   <!-- Page content -->
   <div class="main">
 
-
-    <!-- Modal para agregar objetos -->
+    <!-- modal pa agregar -->
     <div class="modal" id="myModal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -38,7 +37,7 @@
           <!-- Contenido del Modal -->
           <div class="modal-body">
             <!-- Formulario para agregar objetos -->
-            <form action="agregar_objeto.php" method="post">
+            <form action="mantenedor_objetos.php" method="post">
               <div class="form-group">
                 <label for="objeto">Objeto:</label>
                 <input type="text" class="form-control" id="objeto" name="objeto" required>
@@ -59,6 +58,7 @@
                 <label for="localizacion">Localización:</label>
                 <input type="text" class="form-control" id="localizacion" name="localizacion" required>
               </div>
+              <input type="text" id="consulta" name="consulta" value="agregar" hidden>
               <button type="submit" class="btn btn-success">Agregar</button>
             </form>
           </div>
@@ -67,38 +67,70 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
           </div>
-
         </div>
       </div>
     </div>
 
+    <!-- modal pa actualizar -->
+    <!-- Modal para actualizar objetos -->
+    <div class="modal" id="myModal_actualizar">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <!-- Cabecera del Modal -->
+          <div class="modal-header">
+            <h4 class="modal-title">Actualizar Objeto</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Contenido del Modal -->
+          <div class="modal-body">
+          <?php
+          require 'db.php';
+          $sql = "SELECT * FROM objetos where id=?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("s", $id);
+          $stmt->execute();
+          $result = $stmt->get_result();
+         
+          
+          // Verificar si la consulta devolvió resultados
+          if ($result->num_rows > 0) {
+            // output data of each row
+
+          } else {
+            echo "0 results";
+          }
+          $conn->close();
+          ?>
+          ?>
+          </div>
+          <!-- Pie del Modal -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
     <div class="tabla" id="tabla">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-        Agregar Objeto
-      </button>
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-        Actualizar Objeto
-      </button>
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-        Borrar Objeto
-      </button>
-      
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Agregar Objeto</button>
       <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Buscar por objeto">
       <?php
-      $servername = "localhost";
-      $username = "root";
-      $password = "";
-      $dbname = "inventario";
+      require 'db.php';
 
       $conn = new mysqli($servername, $username, $password, $dbname);
 
-      if ($conn->connect_error) {
-        die("Conexión fallida: " . $conn->connect_error);
-      }
-
-      $sql = "SELECT objeto, marca, proveedor, modelo, localizacion, id FROM objetos";
-      $result = $conn->query($sql);
-
+      $sql = "SELECT objeto, marca, proveedor, modelo, localizacion, id FROM objetos ORDER BY id DESC";
+      $stmt = $conn->prepare($sql);
+      $stmt->execute();
+      $result = $stmt->get_result();
       if ($result->num_rows > 0) {
 
         echo "
@@ -111,6 +143,7 @@
                     <th>Proveedor</th>
                     <th>Modelo</th>
                     <th>Localización</th>
+                    <th>Acciones</th>
                    
                 </tr>
             </thead>
@@ -124,7 +157,19 @@
                 <td>" . $row["proveedor"] . "</td>
                 <td>" . $row["modelo"] . "</td>
                 <td>" . $row["localizacion"] . "</td>
-                
+                <td> <form action='mantenedor_objetos.php' method='post'>
+                <input type='text' id='id' name='id' value='" . $row["id"] . "' hidden>
+                <input type='text' id='consulta' name='consulta' value='consulta_actualizar' hidden>
+                <button type='submit' class='btn btn-primary' data-toggle='modal' data-target='#myModal_actualizar'>Actualizar</button>
+                </form>
+                </td>
+
+                <td>  <form action='mantenedor_objetos.php' method='post'>
+                <input type='text' id='id' name='id' value='" . $row["id"] . "' hidden>
+                <input type='text' id='consulta' name='consulta' value='eliminar' hidden>
+                <button type='submit' class='btn btn-primary'>Eliminar</button>
+                </form>
+                 </td>
               </tr>";
         }
 
@@ -139,50 +184,11 @@
   </div>
 
 
+  </div>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script>
-    function myFunction() {
-      // Declare variables
-      var input, filter, table, tr, td, i, txtValue;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("tabla");
-      tr = table.getElementsByTagName("tr");
-
-      // Loop through all table rows, and hide those who don't match the search query
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[1];
-        if (td) {
-          txtValue = td.textContent || td.innerText;
-          if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
-          }
-        }
-      }
-    }
-  </script>
-  <script>
-    // AJAX para enviar datos del formulario y actualizar la tabla sin recargar la página
-    $(document).ready(function () {
-      $('#addForm').submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-          type: 'POST',
-          url: 'agregar_objeto.php', // Ruta al archivo PHP que procesa el formulario
-          data: $(this).serialize(),
-          success: function (data) {
-            // Actualizar la tabla después de agregar un objeto
-            $('#myModal').modal('hide'); // Cerrar el modal
-            location.reload(); // Recargar la página para actualizar la tabla
-          }
-        });
-      });
-    });
-  </script>
+  <script src="functions.js"></script>
 </body>
 
 </html>
